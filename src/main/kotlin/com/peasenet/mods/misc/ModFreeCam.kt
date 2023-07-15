@@ -50,9 +50,6 @@ class ModFreeCam : MiscMod(
     private var fake: FakePlayer? = null
 
     init {
-//        val freeCamSpeed = SlideSetting("gavinsmod.settings.misc.freecam.speed")
-//        freeCamSpeed.setCallback { miscConfig.freeCamSpeed = freeCamSpeed.value }
-//        freeCamSpeed.value = miscConfig.freeCamSpeed
         val freeCamSpeed = SettingBuilder()
             .setTitle("gavinsmod.settings.misc.freecam.speed")
             .setValue(miscConfig.freeCamSpeed)
