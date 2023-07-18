@@ -20,6 +20,10 @@
 package com.peasenet.mods.misc
 
 import com.peasenet.main.GavinsMod
+import com.peasenet.main.Settings
+import com.peasenet.config.TracerConfig
+import com.peasenet.config.EspConfig
+import com.peasenet.config.MiscConfig
 import com.peasenet.settings.SettingBuilder
 import com.peasenet.util.FakePlayer
 import com.peasenet.util.PlayerUtils
@@ -52,9 +56,9 @@ class ModFreeCam : MiscMod(
     init {
         val freeCamSpeed = SettingBuilder()
             .setTitle("gavinsmod.settings.misc.freecam.speed")
-            .setValue(miscConfig.freeCamSpeed)
+            .setValue(config.freeCamSpeed)
             .buildSlider()
-        freeCamSpeed.setCallback { miscConfig.freeCamSpeed = freeCamSpeed.value }
+        freeCamSpeed.setCallback { config.freeCamSpeed = freeCamSpeed.value }
         val subSetting = SettingBuilder()
             .setWidth(100f)
             .setHeight(10f)
@@ -79,11 +83,11 @@ class ModFreeCam : MiscMod(
         player.isOnGround = false
         player.abilities.flying = true
         player.velocity = Vec3d.ZERO
-        val scalar = miscConfig.freeCamSpeed
+        val scalar = config.freeCamSpeed
         if (player.input.sneaking && scalar != 0F)
-            player.addVelocity(0.0, -0.75 * miscConfig.freeCamSpeed, 0.0)
+            player.addVelocity(0.0, -0.75 * config.freeCamSpeed, 0.0)
         else if (player.input.jumping && scalar != 0F)
-            player.addVelocity(0.0, 0.75 * miscConfig.freeCamSpeed, 0.0)
+            player.addVelocity(0.0, 0.75 * config.freeCamSpeed, 0.0)
     }
 
     override fun onDisable() {
@@ -99,8 +103,8 @@ class ModFreeCam : MiscMod(
         val camera = MinecraftClient.getInstance().gameRenderer.camera
         val playerPos = PlayerUtils.getNewPlayerPosition(delta, camera)
         val aabb = RenderUtils.getEntityBox(delta, fake!!)
-        RenderUtils.renderSingleLine(stack, bufferBuilder, playerPos, aabb.center, GavinsMod.tracerConfig.playerColor)
-        RenderUtils.drawBox(stack, bufferBuilder, aabb, GavinsMod.espConfig.playerColor)
+        RenderUtils.renderSingleLine(stack, bufferBuilder, playerPos, aabb.center, Settings.getConfig<TracerConfig>("tracer").playerColor)
+        RenderUtils.drawBox(stack, bufferBuilder, aabb, Settings.getConfig<EspConfig>("esp").playerColor)
     }
 
     override fun onPacketSend(packet: OutputPacket) {
@@ -108,7 +112,15 @@ class ModFreeCam : MiscMod(
     }
 
     override fun onAirStrafe(event: AirStrafeEvent) {
-        val speed = 1f * (miscConfig.freeCamSpeed)
+        val speed = 1f * (config.freeCamSpeed)
         event.speed = speed
     }
+
+    companion object {
+        private val config: MiscConfig
+        get() {
+            return Settings.getConfig<MiscConfig>("misc")
+        }
+    }
+
 }
